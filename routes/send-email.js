@@ -11,11 +11,16 @@ const getHostname = (url) => {
 };
 
 router.post("/", function (req, res, next) {
+  const data = JSON.stringify(req.body, null, 4);
+
   let transporter = nodemailer.createTransport({
-    service: "gmail",
+    host: process.env.SMTP_HOST,
     auth: {
       user: process.env.SOURCE_ADDRESS,
       pass: process.env.PASSWORD,
+    },
+    tls: {
+      rejectUnauthorized: false,
     },
   });
 
@@ -23,13 +28,13 @@ router.post("/", function (req, res, next) {
     from: process.env.SOURCE_ADDRESS,
     to: process.env.DESTINATION_ADDRESS,
     subject: "[survey-widget] " + getHostname(req.body.url), // Subject line
-    text: JSON.stringify(req.body, null, 4),
+    text: data,
   };
 
   transporter.sendMail(mailOptions, (error, info) => {
     if (error) {
-      return res.status(400).send({
-        message: error,
+      return res.status(400).json({
+        message: error.message,
       });
     }
     res.send("Message send Successfully");
