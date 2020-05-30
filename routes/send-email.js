@@ -15,6 +15,7 @@ router.post("/", function (req, res, next) {
 
   let transporter = nodemailer.createTransport({
     host: process.env.SMTP_HOST,
+    requireTLS: true,
     port: 465,
     secure: true,
     auth: {
@@ -22,6 +23,7 @@ router.post("/", function (req, res, next) {
       pass: process.env.PASSWORD,
     },
     tls: {
+      ciphers: "SSLv3",
       rejectUnauthorized: false,
     },
   });
